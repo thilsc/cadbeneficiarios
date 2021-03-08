@@ -14,18 +14,38 @@ namespace FI.AtividadeEntrevista.BLL
         /// <param name="cliente">Objeto de cliente</param>
         public long Incluir(DML.Cliente cliente)
         {
-            DAL.DaoCliente cli = new DAL.DaoCliente();
-            return cli.Incluir(cliente);
+            DAL.DaoCliente cliDAO = new DAL.DaoCliente();
+
+            return cliDAO.Incluir(cliente);
         }
 
         /// <summary>
-        /// Altera um cliente
+        /// Inclui os beneficiários de um cliente
         /// </summary>
-        /// <param name="cliente">Objeto de cliente</param>
-        public void Alterar(DML.Cliente cliente)
+        /// <param name="cliente">Objeto de cliente</param>        
+        public void IncluirBeneficiarios(DML.Cliente cliente)
         {
-            DAL.DaoCliente cli = new DAL.DaoCliente();
-            cli.Alterar(cliente);
+            DAL.DaoBeneficiario benefDAO = new DAL.DaoBeneficiario();
+            foreach (var benef in cliente.Beneficiarios)
+            {
+                benef.IdCliente = cliente.Id;
+                benefDAO.Incluir(benef);
+            }
+        }
+
+    /// <summary>
+    /// Altera um cliente
+    /// </summary>
+    /// <param name="cliente">Objeto de cliente</param>
+    public void Alterar(DML.Cliente cliente)
+        {
+            DAL.DaoCliente cliDAO = new DAL.DaoCliente();
+            DAL.DaoBeneficiario benefDAO = new DAL.DaoBeneficiario();
+
+            cliDAO.Alterar(cliente);
+
+            foreach (var benef in cliente.Beneficiarios)
+                benefDAO.Alterar(benef);
         }
 
         /// <summary>
@@ -35,8 +55,8 @@ namespace FI.AtividadeEntrevista.BLL
         /// <returns></returns>
         public DML.Cliente Consultar(long id)
         {
-            DAL.DaoCliente cli = new DAL.DaoCliente();
-            return cli.Consultar(id);
+            DAL.DaoCliente cliDAO = new DAL.DaoCliente();
+            return cliDAO.Consultar(id);
         }
 
         /// <summary>
@@ -46,8 +66,24 @@ namespace FI.AtividadeEntrevista.BLL
         /// <returns></returns>
         public void Excluir(long id)
         {
-            DAL.DaoCliente cli = new DAL.DaoCliente();
-            cli.Excluir(id);
+            ExcluirBeneficiarios(id);
+
+            DAL.DaoCliente cliDAO = new DAL.DaoCliente();
+            cliDAO.Excluir(id);
+        }
+
+        /// <summary>
+        /// Exclui os beneficiários de um cliente
+        /// </summary>
+        /// <param name="cliente">Objeto de cliente</param>        
+        public void ExcluirBeneficiarios(long IdCliente)
+        {
+            DAL.DaoBeneficiario benefDAO = new DAL.DaoBeneficiario();
+
+            var cli = Consultar(IdCliente);
+
+            foreach (var benef in cli.Beneficiarios)
+                benefDAO.Excluir(benef.Id);
         }
 
         /// <summary>
@@ -55,8 +91,8 @@ namespace FI.AtividadeEntrevista.BLL
         /// </summary>
         public List<DML.Cliente> Listar()
         {
-            DAL.DaoCliente cli = new DAL.DaoCliente();
-            return cli.Listar();
+            DAL.DaoCliente cliDAO = new DAL.DaoCliente();
+            return cliDAO.Listar();
         }
 
         /// <summary>
@@ -64,8 +100,8 @@ namespace FI.AtividadeEntrevista.BLL
         /// </summary>
         public List<DML.Cliente> Pesquisa(int iniciarEm, int quantidade, string campoOrdenacao, bool crescente, out int qtd)
         {
-            DAL.DaoCliente cli = new DAL.DaoCliente();
-            return cli.Pesquisa(iniciarEm,  quantidade, campoOrdenacao, crescente, out qtd);
+            DAL.DaoCliente cliDAO = new DAL.DaoCliente();
+            return cliDAO.Pesquisa(iniciarEm,  quantidade, campoOrdenacao, crescente, out qtd);
         }
 
         /// <summary>
@@ -75,8 +111,8 @@ namespace FI.AtividadeEntrevista.BLL
         /// <returns></returns>
         public bool VerificarExistencia(string CPF)
         {
-            DAL.DaoCliente cli = new DAL.DaoCliente();
-            return cli.VerificarExistencia(CPF);
+            DAL.DaoCliente cliDAO = new DAL.DaoCliente();
+            return cliDAO.VerificarExistencia(CPF);
         }
     }
 }
